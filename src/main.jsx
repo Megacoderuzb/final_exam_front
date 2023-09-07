@@ -15,7 +15,7 @@ axios.defaults.baseURL = "http://localhost:7070";
 
 axios.defaults.headers.common["Content-Type"] = "application/json";
 let token = localStorage.getItem("token");
-if (token) axios.defaults.headers.common["x-auth-token"] = token;
+if (token) axios.defaults.headers.common["Authorization"] = token;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
