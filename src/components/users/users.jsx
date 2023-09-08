@@ -11,8 +11,6 @@ const Users = () => {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("");
   const [limit, setLimit] = useState(5);
-  const [page, setPage] = useState(1);
-  // eslint-disable-next-line no-unused-vars
   const [offset, setOffset] = useState(0);
   let navigate = useNavigate();
   let getdata = async () => {
@@ -33,8 +31,7 @@ const Users = () => {
       // let { data } = await axios.get(url);
       console.log(data, "in use");
       setData(data.data);
-      console.log((data.pageInfo.total - offset) / limit);
-      setPage((data.pageInfo.total - offset) / limit);
+
       return;
       // }
     }
@@ -42,8 +39,6 @@ const Users = () => {
     let { data } = await axios.get(url);
     console.log(data, "in use");
     setData(data.data);
-    console.log((data.pageInfo.total - offset) / limit);
-    setPage((data.pageInfo.total - offset) / limit);
   };
   useEffect(() => {
     let token = localStorage.getItem("token");
