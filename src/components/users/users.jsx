@@ -12,6 +12,7 @@ const Users = () => {
   const [filter, setFilter] = useState("");
   const [limit, setLimit] = useState(5);
   const [offset, setOffset] = useState(0);
+  const [total, setTotal] = useState(0);
   let navigate = useNavigate();
   let getdata = async () => {
     let url = query
@@ -29,6 +30,8 @@ const Users = () => {
       // setData(data.data);
       // } else {
       // let { data } = await axios.get(url);
+      console.log(data?.pageInfo?.total, "total");
+      setTotal(data?.pageInfo?.total);
       console.log(data, "in use");
       setData(data.data);
 
@@ -37,6 +40,8 @@ const Users = () => {
     }
 
     let { data } = await axios.get(url);
+    console.log(data?.pageInfo?.total, "total");
+    setTotal(data?.pageInfo?.total);
     console.log(data, "in use");
     setData(data.data);
   };
@@ -85,11 +90,9 @@ const Users = () => {
       <select
         name="limit"
         id="limit"
-        // defaultValue={limit}
         onChange={(e) => {
           console.log(e.target.value, "val");
           setLimit(e.target.value);
-          // console.log(limit);
         }}
       >
         <option value="" disabled selected>
@@ -173,7 +176,9 @@ const Users = () => {
       <Pagination>
         {/* <Pagination.First /> */}
         <Pagination.Prev
+          disabled={offset <= 0}
           onClick={() => {
+            console.log(total);
             setOffset(offset - limit);
           }}
         />
@@ -181,7 +186,9 @@ const Users = () => {
         <Pagination.Item>__</Pagination.Item>
 
         <Pagination.Next
+          disabled={offset + limit >= total}
           onClick={() => {
+            console.log(total);
             setOffset(offset + limit);
           }}
         />
