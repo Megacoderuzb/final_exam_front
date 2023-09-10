@@ -7,20 +7,19 @@ import Footer from "../../components/footer/footer";
 import { Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-const EditUser = () => {
+const EditGuide = () => {
   const [data, setData] = useState({});
   const [send, setSend] = useState({
-    first_name: data.data?.first_name,
-    last_name: data.data?.last_name,
-    username: data.data?.username,
-    age: data.data?.age,
+    title: data.data?.title,
+    content: data.data?.content,
+    notify: false,
   });
   let { id } = useParams();
   let navigate = useNavigate();
   let getdata = async () => {
-    let data = await axios.get(`/users/${id}`);
+    let { data } = await axios.get(`/guides/${id}`);
     console.log(data);
-    setData(data.data);
+    setData(data);
   };
   useEffect(() => {
     getdata();
@@ -30,24 +29,12 @@ const EditUser = () => {
 
     try {
       console.log(data.data);
-      let res = await axios.patch(
-        `/users/${id}`,
-        // headers,
-        send
-        // {
-        //   first_name: data.data.first_name,
-        //   last_name: data.data.last_name,
-        //   username: data.data.username,
-        //   age: data.data.age,
-        // }
-      );
-      // console.log(res);
-      // let res = await axios.post("/users/login", values);
+      let res = await axios.patch(`/guides/${id}`, send);
 
       if (res.status === 200) {
         toast("Edited successfully", { type: "success" });
         setData({}); // Clear input values
-        navigate(`/users/${id}`);
+        navigate(`/guide/${id}`);
       }
     } catch (error) {
       if (error.message === "Network Error") {
@@ -68,6 +55,15 @@ const EditUser = () => {
       };
     });
   }
+  function handleNotify(e) {
+    setSend((oldValues) => {
+      return {
+        ...oldValues,
+        [e.target.name]: !send[e.target.name],
+      };
+    });
+  }
+  console.log(send);
 
   return (
     <div>
@@ -78,55 +74,39 @@ const EditUser = () => {
             marginBottom: "35px",
           }}
         >
-          Edit User
+          Edit Guide
         </h2>
         <Form style={{ width: "100%" }} onSubmit={handleSubmit}>
           <Form.Group style={{ width: "100%" }} controlId="formName">
-            <Form.Label>First name</Form.Label>
+            <Form.Label>Title</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
-              type="first_name"
+              type="title"
               //   placeholder="first name"
-              name="first_name"
-              defaultValue={data.data?.first_name}
+              name="title"
+              defaultValue={data.data?.title}
               onChange={handleChange}
             />
           </Form.Group>
 
           <Form.Group style={{ width: "100%" }} controlId="formlastName">
-            <Form.Label>Last name</Form.Label>
+            <Form.Label>Content</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
-              type="last_name"
-              //   placeholder="last name"
-              name="last_name"
-              defaultValue={data.data?.last_name}
+              type="content"
+              //   placeholder="Content"
+              name="content"
+              defaultValue={data.data?.content}
               onChange={handleChange}
             />
           </Form.Group>
-          <Form.Group style={{ width: "100%" }} controlId="formUsername">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              style={{ width: "100%" }}
-              type="text"
-              placeholder="username"
-              name="username"
-              defaultValue={data.data?.username}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group style={{ width: "100%" }} controlId="formAge">
-            <Form.Label>Age</Form.Label>
-            <Form.Control
-              style={{ width: "100%" }}
-              type="number"
-              //   placeholder="Enter Age"
-              name="age"
-              defaultValue={data.data?.age}
-              onChange={handleChange}
-            />
-          </Form.Group>
-
+          <Form.Check
+            type="switch"
+            id="custom-switch"
+            label="Notify for all users"
+            name="notify"
+            onChange={handleNotify}
+          />
           <button
             style={{
               width: "50%",
@@ -158,4 +138,4 @@ const EditUser = () => {
   );
 };
 
-export default EditUser;
+export default EditGuide;

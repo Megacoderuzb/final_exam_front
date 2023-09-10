@@ -1,53 +1,31 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Container } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/sidebar/sidebar";
 import Footer from "../../components/footer/footer";
 import { Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-const EditUser = () => {
-  const [data, setData] = useState({});
+const CreateUser = () => {
   const [send, setSend] = useState({
-    first_name: data.data?.first_name,
-    last_name: data.data?.last_name,
-    username: data.data?.username,
-    age: data.data?.age,
+    first_name: "",
+    last_name: "",
+    age: 0,
+    role: "employee",
+    username: "",
+    password: "",
   });
-  let { id } = useParams();
   let navigate = useNavigate();
-  let getdata = async () => {
-    let data = await axios.get(`/users/${id}`);
-    console.log(data);
-    setData(data.data);
-  };
-  useEffect(() => {
-    getdata();
-  }, []);
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      console.log(data.data);
-      let res = await axios.patch(
-        `/users/${id}`,
-        // headers,
-        send
-        // {
-        //   first_name: data.data.first_name,
-        //   last_name: data.data.last_name,
-        //   username: data.data.username,
-        //   age: data.data.age,
-        // }
-      );
-      // console.log(res);
-      // let res = await axios.post("/users/login", values);
+      let res = await axios.post(`/users`, send);
 
-      if (res.status === 200) {
-        toast("Edited successfully", { type: "success" });
-        setData({}); // Clear input values
-        navigate(`/users/${id}`);
+      if (res.status === 201) {
+        toast("Created successfully", { type: "success" });
+        navigate(`/users`);
       }
     } catch (error) {
       if (error.message === "Network Error") {
@@ -78,40 +56,26 @@ const EditUser = () => {
             marginBottom: "35px",
           }}
         >
-          Edit User
+          Add User
         </h2>
         <Form style={{ width: "100%" }} onSubmit={handleSubmit}>
           <Form.Group style={{ width: "100%" }} controlId="formName">
-            <Form.Label>First name</Form.Label>
+            <Form.Label>First Name</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
-              type="first_name"
-              //   placeholder="first name"
+              type="text"
               name="first_name"
-              defaultValue={data.data?.first_name}
               onChange={handleChange}
             />
           </Form.Group>
 
           <Form.Group style={{ width: "100%" }} controlId="formlastName">
-            <Form.Label>Last name</Form.Label>
-            <Form.Control
-              style={{ width: "100%" }}
-              type="last_name"
-              //   placeholder="last name"
-              name="last_name"
-              defaultValue={data.data?.last_name}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group style={{ width: "100%" }} controlId="formUsername">
-            <Form.Label>Username</Form.Label>
+            <Form.Label>Last Name</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
               type="text"
-              placeholder="username"
-              name="username"
-              defaultValue={data.data?.username}
+              //   placeholder="Content"
+              name="last_name"
               onChange={handleChange}
             />
           </Form.Group>
@@ -122,11 +86,29 @@ const EditUser = () => {
               type="number"
               //   placeholder="Enter Age"
               name="age"
-              defaultValue={data.data?.age}
               onChange={handleChange}
             />
           </Form.Group>
-
+          <Form.Group style={{ width: "100%" }} controlId="formUsername">
+            <Form.Label>Username</Form.Label>
+            <Form.Control
+              style={{ width: "100%" }}
+              type="text"
+              placeholder="username"
+              name="username"
+              onChange={handleChange}
+            />
+          </Form.Group>
+          <Form.Group style={{ width: "100%" }} controlId="formUsername">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              style={{ width: "100%" }}
+              type="password"
+              // placeholder="username"
+              name="password"
+              onChange={handleChange}
+            />
+          </Form.Group>
           <button
             style={{
               width: "50%",
@@ -158,4 +140,4 @@ const EditUser = () => {
   );
 };
 
-export default EditUser;
+export default CreateUser;

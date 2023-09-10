@@ -5,17 +5,18 @@ import { useParams } from "react-router-dom";
 import Sidebar from "../../components/sidebar/sidebar";
 import Footer from "../../components/footer/footer";
 
-const UserInfo = () => {
+const GuideInfo = () => {
   const [data, setData] = useState({});
   let { id } = useParams();
   let getdata = async () => {
-    let data = await axios.get(`/users/${id}`);
+    let data = await axios.get(`/guides/${id}`);
     console.log(data);
     setData(data.data);
   };
   useEffect(() => {
     getdata();
   }, []);
+
   return (
     <div>
       <Sidebar />
@@ -25,21 +26,19 @@ const UserInfo = () => {
             marginBottom: "35px",
           }}
         >
-          User Info
+          Guide Info
         </h2>
         <Row>
           <Col md={12}>
-            <h2>
-              {data.data?.first_name} {data.data?.last_name}
-            </h2>
-            <p>{data.data?.username}</p>
+            <h3>{data.data?.title}</h3>
           </Col>
-
+        </Row>
+        <Row>
           <Col md={3}>
-            <h5>Age:</h5>
-            <p>{data.data?.age}</p>
+            {/* <h5>:</h5> */}
+            <p>{data.data?.content}</p>
           </Col>
-
+          {/* 
           <Col md={3}>
             <h5>Role:</h5>
             <p>{data.data?.role}</p>
@@ -47,10 +46,8 @@ const UserInfo = () => {
 
           <Col md={3}>
             <h5>Guides:</h5>
-            <p>Total guides {data.data?.total_guides}</p>
-            <p>Read guides {data.data?.read_guides}</p>
-            <p>Todo guides {data.data?.todo_guides}</p>
-          </Col>
+            <p>{data.data?.guides.length}</p>
+          </Col> */}
         </Row>
       </Container>
       <Footer />
@@ -58,4 +55,4 @@ const UserInfo = () => {
   );
 };
 
-export default UserInfo;
+export default GuideInfo;

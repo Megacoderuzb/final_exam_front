@@ -1,13 +1,23 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 
 const ProfilePage = () => {
   const [data, setData] = useState({});
+  // let navigate = useNavigate();
   let getdata = async () => {
-    let data = await axios.get("/users/me");
-    console.log(data);
-    setData(data.data);
+    try {
+      let data = await axios.get("/users/me");
+      console.log(data);
+      setData(data.data);
+    } catch (error) {
+      console.log(error);
+      // if (error.code == "ERR_BAD_REQUEST") {
+      //   localStorage.removeItem("token");
+      //   navigate("/login");
+      // }
+    }
   };
   useEffect(() => {
     getdata();
@@ -41,7 +51,9 @@ const ProfilePage = () => {
 
         <Col md={3}>
           <h5>Guides:</h5>
-          <p>{data.data?.guides.length}</p>
+          <p>Total guides {data.data?.total_guides}</p>
+          <p>Read guides {data.data?.read_guides}</p>
+          <p>Todo guides {data.data?.todo_guides}</p>
         </Col>
       </Row>
     </Container>

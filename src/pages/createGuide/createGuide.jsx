@@ -1,53 +1,28 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Container } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/sidebar/sidebar";
 import Footer from "../../components/footer/footer";
 import { Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-const EditUser = () => {
-  const [data, setData] = useState({});
+const CreateGuide = () => {
   const [send, setSend] = useState({
-    first_name: data.data?.first_name,
-    last_name: data.data?.last_name,
-    username: data.data?.username,
-    age: data.data?.age,
+    title: "",
+    content: "",
+    notify: false,
   });
-  let { id } = useParams();
   let navigate = useNavigate();
-  let getdata = async () => {
-    let data = await axios.get(`/users/${id}`);
-    console.log(data);
-    setData(data.data);
-  };
-  useEffect(() => {
-    getdata();
-  }, []);
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      console.log(data.data);
-      let res = await axios.patch(
-        `/users/${id}`,
-        // headers,
-        send
-        // {
-        //   first_name: data.data.first_name,
-        //   last_name: data.data.last_name,
-        //   username: data.data.username,
-        //   age: data.data.age,
-        // }
-      );
-      // console.log(res);
-      // let res = await axios.post("/users/login", values);
+      let res = await axios.post(`/guides`, send);
 
       if (res.status === 200) {
-        toast("Edited successfully", { type: "success" });
-        setData({}); // Clear input values
-        navigate(`/users/${id}`);
+        toast("Created successfully", { type: "success" });
+        navigate(`/guide`);
       }
     } catch (error) {
       if (error.message === "Network Error") {
@@ -68,6 +43,15 @@ const EditUser = () => {
       };
     });
   }
+  function handleNotify(e) {
+    setSend((oldValues) => {
+      return {
+        ...oldValues,
+        [e.target.name]: !send[e.target.name],
+      };
+    });
+  }
+  console.log(send);
 
   return (
     <div>
@@ -78,55 +62,37 @@ const EditUser = () => {
             marginBottom: "35px",
           }}
         >
-          Edit User
+          Create Guide
         </h2>
         <Form style={{ width: "100%" }} onSubmit={handleSubmit}>
           <Form.Group style={{ width: "100%" }} controlId="formName">
-            <Form.Label>First name</Form.Label>
+            <Form.Label>Title</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
-              type="first_name"
+              type="title"
               //   placeholder="first name"
-              name="first_name"
-              defaultValue={data.data?.first_name}
+              name="title"
               onChange={handleChange}
             />
           </Form.Group>
 
           <Form.Group style={{ width: "100%" }} controlId="formlastName">
-            <Form.Label>Last name</Form.Label>
+            <Form.Label>Content</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
-              type="last_name"
-              //   placeholder="last name"
-              name="last_name"
-              defaultValue={data.data?.last_name}
+              type="content"
+              //   placeholder="Content"
+              name="content"
               onChange={handleChange}
             />
           </Form.Group>
-          <Form.Group style={{ width: "100%" }} controlId="formUsername">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              style={{ width: "100%" }}
-              type="text"
-              placeholder="username"
-              name="username"
-              defaultValue={data.data?.username}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group style={{ width: "100%" }} controlId="formAge">
-            <Form.Label>Age</Form.Label>
-            <Form.Control
-              style={{ width: "100%" }}
-              type="number"
-              //   placeholder="Enter Age"
-              name="age"
-              defaultValue={data.data?.age}
-              onChange={handleChange}
-            />
-          </Form.Group>
-
+          <Form.Check
+            type="switch"
+            id="custom-switch"
+            label="Notify for all users"
+            name="notify"
+            onChange={handleNotify}
+          />
           <button
             style={{
               width: "50%",
@@ -158,4 +124,4 @@ const EditUser = () => {
   );
 };
 
-export default EditUser;
+export default CreateGuide;

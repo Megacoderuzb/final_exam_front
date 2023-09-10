@@ -6,41 +6,20 @@ import { toast } from "react-toastify";
 import { Pagination } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
 
-const Users = () => {
+const Guides = () => {
   const [data, setData] = useState([]);
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState("");
   const [limit, setLimit] = useState(5);
   const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
   let navigate = useNavigate();
   let getdata = async () => {
     let url = query
-      ? `/users?q=${query}&page[offset]=${offset}&page[limit]=${limit}`
-      : `/users?page[offset]=${offset}&page[limit]=${limit}`;
-
-    if (filter != "") {
-      console.log(url);
-      console.log(url + `&filters[role]=${filter}`);
-      let { data } = await axios.get(
-        url + `&filters[role]=${filter}`
-        // `/users?q=${query}&page[offset]=0&page[limit]=5`
-      );
-      // console.log(data, "in use");
-      // setData(data.data);
-      // } else {
-      // let { data } = await axios.get(url);
-      console.log(data?.pageInfo?.total, "total");
-      setTotal(data?.pageInfo?.total);
-      console.log(data, "in use");
-      setData(data.data);
-
-      return;
-      // }
-    }
+      ? `/guides?q=${query}&page[offset]=${offset}&page[limit]=${limit}`
+      : `/guides?page[offset]=${offset}&page[limit]=${limit}`;
 
     let { data } = await axios.get(url);
-    console.log(data?.pageInfo?.total, "total");
+    // console.log(data?.pageInfo?.total, "total");
     setTotal(data?.pageInfo?.total);
     console.log(data, "in use");
     setData(data.data);
@@ -53,25 +32,29 @@ const Users = () => {
   }, []);
   useEffect(() => {
     getdata();
-  }, [filter, query, limit, offset]);
+  }, [query, limit, offset]);
   console.log(data, "out");
-  let hendleDelete = (p) => {
+  let hendleDelete = async (p) => {
     let config = {
       method: "delete",
-      url: `/users/${p}`,
+      url: `/guides/${p}`,
     };
 
     axios
       .request(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
-        toast(response.data.data, { type: "info" });
+        toast("Successfully deleted", { type: "info" });
       })
       .catch((error) => {
         console.log(error);
         toast("Error try again", { type: "error" });
       });
-    setOffset(offset);
+    // setLimit(limit);
+    window.location.reload();
+    // let news = await data.filter((item) => item.ID === p);
+    // console.log(news);
+    // setData(news);
   };
 
   return (
@@ -86,12 +69,12 @@ const Users = () => {
           flexDirection: "row",
         }}
       >
-        <h1>Users Page</h1>
+        <h1>Guide Page</h1>
         <Button
           variant="info"
           style={{ color: "#fff", fontWeight: "bold" }}
           onClick={() => {
-            navigate("/users/add");
+            navigate("/guide/add");
           }}
         >
           Add New
@@ -126,82 +109,22 @@ const Users = () => {
           <option value="5">5</option>
           <option value="10">10</option>
         </Form.Select>
-        <Form.Select
-          size="lg"
-          name="filter"
-          id="filter"
-          onChange={(e) => {
-            console.log(e.target.value, "val");
-            setFilter(e.target.value);
-          }}
-        >
-          <option value="" disabled selected>
-            Select role
-          </option>
-          <option value="">All</option>
-          <option value="admin">admin</option>
-          <option value="employee">employee</option>
-        </Form.Select>
       </InputGroup>
-      {/* <input
-        type="text"
-        placeholder="search"
-        name="search"
-        onChange={(e) => {
-          setQuery(e.target.value);
-        }}
-      /> */}
-      {/* <select
-        name="limit"
-        id="limit"
-        onChange={(e) => {
-          console.log(e.target.value, "val");
-          setLimit(e.target.value);
-        }}
-      >
-        <option value="" disabled selected>
-          Select limit
-        </option>
-        <option value="3">3</option>
-        <option value="5">5</option>
-        <option value="10">10</option>
-      </select> */}
-      {/* <select
-        name="filter"
-        id="filter"
-        // defaultValue={filter}
-        onChange={(e) => {
-          console.log(e.target.value, "val");
-          setFilter(e.target.value);
-          // console.log(filter);
-        }}
-      >
-        <option value="" disabled selected>
-          Select role
-        </option>
-        <option value="">All</option>
-        <option value="admin">admin</option>
-        <option value="employee">employee</option>
-      </select> */}
       <Table striped bordered hover>
         <thead>
           <tr>
             <th>No</th>
-            <th>Full Name</th>
-            <th>Username</th>
-            <th>Age</th>
+            <th>Title</th>
+            <th>Content</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {data?.map((user, index) => (
+          {data.map((guide, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>
-                {user.first_name} {user.last_name}
-              </td>
-              <td>{user.username}</td>
-              <td>{user.age}</td>
+              <td>{guide.title}</td>
+              <td>{guide.content}</td>
               <td
                 style={{
                   display: "flex",
@@ -213,7 +136,7 @@ const Users = () => {
                 <Button
                   variant="info"
                   onClick={() => {
-                    navigate(`/users/${user._id}`);
+                    navigate(`/guide/${guide._id}`);
                   }}
                 >
                   <i className="bx bx-show-alt"></i>
@@ -221,7 +144,7 @@ const Users = () => {
                 <Button
                   variant="primary"
                   onClick={() => {
-                    navigate(`/users/edit/${user._id}`);
+                    navigate(`/guide/edit/${guide._id}`);
                   }}
                 >
                   <i className="bx bx-edit"></i>
@@ -229,7 +152,7 @@ const Users = () => {
                 <Button
                   variant="danger"
                   onClick={() => {
-                    hendleDelete(user._id);
+                    hendleDelete(guide._id);
                   }}
                 >
                   <i className="bx bx-trash"></i>
@@ -240,7 +163,6 @@ const Users = () => {
         </tbody>
       </Table>
       <Pagination>
-        {/* <Pagination.First /> */}
         <Pagination.Prev
           disabled={offset <= 0}
           onClick={() => {
@@ -258,10 +180,9 @@ const Users = () => {
             setOffset(offset + limit);
           }}
         />
-        {/* <Pagination.Last /> */}
       </Pagination>
     </Container>
   );
 };
 
-export default Users;
+export default Guides;
