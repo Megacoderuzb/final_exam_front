@@ -9,14 +9,11 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { ToastContainer } from "react-toastify";
 
-// axios.defaults.baseURL = "";
-
-axios.defaults.baseURL = "http://localhost:7070";
+axios.defaults.baseURL = "https://exam-back-end-d6vv.onrender.com";
 
 axios.defaults.headers.common["Content-Type"] = "application/json";
 let token = localStorage.getItem("token");
 if (token) axios.defaults.headers.common["Authorization"] = token;
-// if (token) axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
