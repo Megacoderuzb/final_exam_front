@@ -19,7 +19,7 @@ const UserInfo = () => {
   };
   useEffect(() => {
     getdata();
-  }, []);
+  });
   return (
     <div>
       <div

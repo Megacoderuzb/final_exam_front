@@ -4,13 +4,11 @@ import App from "./App.jsx";
 import "./index.scss";
 import { BrowserRouter } from "react-router-dom";
 import axios from "axios";
-// import "react-toastify/dist/ReactT"
 import "react-toastify/dist/ReactToastify.css";
 
 import { ToastContainer } from "react-toastify";
 
 axios.defaults.baseURL = "https://finalexam-production.up.railway.app";
-// axios.defaults.baseURL = "https://exam-back-end-d6vv.onrender.com";
 
 axios.defaults.headers.common["Content-Type"] = "application/json";
 let token = localStorage.getItem("token");
