@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../../components/sidebar/sidebar";
 import Footer from "../../components/footer/footer";
@@ -15,38 +15,30 @@ const EditUser = () => {
     username: data.data?.username,
     age: data.data?.age,
   });
+  const [loading, setLoading] = useState(true);
+
   let { id } = useParams();
   let navigate = useNavigate();
   let getdata = async () => {
+    setLoading(true);
     let data = await axios.get(`/users/${id}`);
     console.log(data);
     setData(data.data);
+    setLoading(false);
   };
   useEffect(() => {
     getdata();
   }, []);
   async function handleSubmit(e) {
     e.preventDefault();
-
+    setLoading(true);
     try {
       console.log(data.data);
-      let res = await axios.patch(
-        `/users/${id}`,
-        // headers,
-        send
-        // {
-        //   first_name: data.data.first_name,
-        //   last_name: data.data.last_name,
-        //   username: data.data.username,
-        //   age: data.data.age,
-        // }
-      );
-      // console.log(res);
-      // let res = await axios.post("/users/login", values);
+      let res = await axios.patch(`/users/${id}`, send);
 
       if (res.status === 200) {
         toast("Edited successfully", { type: "success" });
-        setData({}); // Clear input values
+        setData({});
         navigate(`/users/${id}`);
       }
     } catch (error) {
@@ -55,9 +47,8 @@ const EditUser = () => {
       } else {
         toast("The information you entered is incorrect", { type: "error" });
       }
-
-      console.log(error);
     }
+    setLoading(false);
   }
 
   function handleChange(e) {
@@ -71,6 +62,23 @@ const EditUser = () => {
 
   return (
     <div>
+      <div
+        hidden={!loading}
+        style={{
+          width: "100%",
+          height: "100vh",
+          zIndex: "1",
+          backgroundColor: "rgba(134, 105, 105, 0.2)",
+          position: "fixed",
+          top: "0",
+          left: "0",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spinner animation="border" variant="primary" />
+      </div>
       <Sidebar />
       <Container style={{ maxWidth: "820px", padding: "3rem" }}>
         <h2
@@ -86,7 +94,6 @@ const EditUser = () => {
             <Form.Control
               style={{ width: "100%" }}
               type="first_name"
-              //   placeholder="first name"
               name="first_name"
               defaultValue={data.data?.first_name}
               onChange={handleChange}
@@ -98,9 +105,18 @@ const EditUser = () => {
             <Form.Control
               style={{ width: "100%" }}
               type="last_name"
-              //   placeholder="last name"
               name="last_name"
               defaultValue={data.data?.last_name}
+              onChange={handleChange}
+            />
+          </Form.Group>
+          <Form.Group style={{ width: "100%" }} controlId="formPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              style={{ width: "100%" }}
+              type="password"
+              placeholder="password"
+              name="password"
               onChange={handleChange}
             />
           </Form.Group>
@@ -120,7 +136,6 @@ const EditUser = () => {
             <Form.Control
               style={{ width: "100%" }}
               type="number"
-              //   placeholder="Enter Age"
               name="age"
               defaultValue={data.data?.age}
               onChange={handleChange}
@@ -145,12 +160,10 @@ const EditUser = () => {
               fontSize: "14px",
               color: "#fff",
             }}
-            // variant="primary"
             type="submit"
           >
             Send
           </button>
-          {/* </Button> */}
         </Form>
       </Container>
       <Footer />

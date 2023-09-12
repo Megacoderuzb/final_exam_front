@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../../components/sidebar/sidebar";
 import Footer from "../../components/footer/footer";
@@ -14,18 +14,22 @@ const EditGuide = () => {
     content: data.data?.content,
     notify: false,
   });
+  const [loading, setLoading] = useState(false);
+
   let { id } = useParams();
   let navigate = useNavigate();
   let getdata = async () => {
+    setLoading(true);
     let { data } = await axios.get(`/guides/${id}`);
-    console.log(data);
     setData(data);
+    setLoading(false);
   };
   useEffect(() => {
     getdata();
   }, []);
   async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
 
     try {
       console.log(data.data);
@@ -45,6 +49,7 @@ const EditGuide = () => {
 
       console.log(error);
     }
+    setLoading(false);
   }
 
   function handleChange(e) {
@@ -67,6 +72,23 @@ const EditGuide = () => {
 
   return (
     <div>
+      <div
+        hidden={!loading}
+        style={{
+          width: "100%",
+          height: "100vh",
+          zIndex: "1",
+          backgroundColor: "rgba(134, 105, 105, 0.2)",
+          position: "fixed",
+          top: "0",
+          left: "0",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spinner animation="border" variant="primary" />
+      </div>
       <Sidebar />
       <Container style={{ maxWidth: "820px", padding: "3rem" }}>
         <h2

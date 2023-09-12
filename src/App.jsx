@@ -10,7 +10,8 @@ import EditGuide from "./pages/editGuide/editGuide";
 import GuideInfo from "./pages/guideInfo/guideInfo";
 import CreateGuide from "./pages/createGuide/createGuide";
 import CreateUser from "./pages/createUser/createUser";
-import Notification from "./components/Notification/notification";
+import Notification from "./pages/Notification/notification";
+import EditMe from "./pages/editMe/editMe";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/users/:id" element={<UsersInfo />} />
+        <Route path="/users/me" element={<EditMe />} />
         <Route path="/users/add" element={<CreateUser />} />
         <Route path="/users/edit/:id" element={<EditUser />} />
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/sidebar/sidebar";
@@ -7,23 +7,39 @@ import Footer from "../../components/footer/footer";
 import { Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-const CreateGuide = () => {
+const EditMe = () => {
+  const [data, setData] = useState({});
   const [send, setSend] = useState({
-    title: "",
-    content: "",
-    notify: false,
+    first_name: data.data?.first_name,
+    last_name: data.data?.last_name,
+    username: data.data?.username,
+    age: data.data?.age,
   });
   const [loading, setLoading] = useState(false);
+
   let navigate = useNavigate();
+  let getdata = async () => {
+    setLoading(true);
+    let data = await axios.get(`/users/me`);
+    console.log(data);
+    setData(data.data);
+    setLoading(false);
+  };
+  useEffect(() => {
+    getdata();
+  }, []);
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
+
     try {
-      let res = await axios.post(`/guides`, send);
+      console.log(data.data);
+      let res = await axios.patch(`/users/me`, send);
 
       if (res.status === 200) {
-        toast("Created successfully", { type: "success" });
-        navigate(`/guide`);
+        toast("Edited successfully", { type: "success" });
+        setData({});
+        navigate(`/`);
       }
     } catch (error) {
       if (error.message === "Network Error") {
@@ -40,14 +56,6 @@ const CreateGuide = () => {
       return {
         ...oldValues,
         [e.target.name]: e.target.value,
-      };
-    });
-  }
-  function handleNotify(e) {
-    setSend((oldValues) => {
-      return {
-        ...oldValues,
-        [e.target.name]: !send[e.target.name],
       };
     });
   }
@@ -78,37 +86,54 @@ const CreateGuide = () => {
             marginBottom: "35px",
           }}
         >
-          Create Guide
+          Edit Profile
         </h2>
         <Form style={{ width: "100%" }} onSubmit={handleSubmit}>
           <Form.Group style={{ width: "100%" }} controlId="formName">
-            <Form.Label>Title</Form.Label>
+            <Form.Label>First name</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
-              type="title"
+              type="first_name"
               //   placeholder="first name"
-              name="title"
+              name="first_name"
+              defaultValue={data.data?.first_name}
               onChange={handleChange}
             />
           </Form.Group>
 
           <Form.Group style={{ width: "100%" }} controlId="formlastName">
-            <Form.Label>Content</Form.Label>
+            <Form.Label>Last name</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
-              type="content"
-              //   placeholder="Content"
-              name="content"
+              type="last_name"
+              //   placeholder="last name"
+              name="last_name"
+              defaultValue={data.data?.last_name}
               onChange={handleChange}
             />
           </Form.Group>
-          <Form.Check
-            type="switch"
-            id="custom-switch"
-            label="Notify for all users"
-            name="notify"
-            onChange={handleNotify}
-          />
+          <Form.Group style={{ width: "100%" }} controlId="formUsername">
+            <Form.Label>Username</Form.Label>
+            <Form.Control
+              style={{ width: "100%" }}
+              type="text"
+              placeholder="username"
+              name="username"
+              defaultValue={data.data?.username}
+              onChange={handleChange}
+            />
+          </Form.Group>
+          <Form.Group style={{ width: "100%" }} controlId="formAge">
+            <Form.Label>Age</Form.Label>
+            <Form.Control
+              style={{ width: "100%" }}
+              type="number"
+              name="age"
+              defaultValue={data.data?.age}
+              onChange={handleChange}
+            />
+          </Form.Group>
+
           <button
             style={{
               width: "50%",
@@ -140,4 +165,4 @@ const CreateGuide = () => {
   );
 };
 
-export default CreateGuide;
+export default EditMe;

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/sidebar/sidebar";
 import Footer from "../../components/footer/footer";
@@ -16,9 +16,12 @@ const CreateUser = () => {
     username: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
+
   let navigate = useNavigate();
   async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
 
     try {
       let res = await axios.post(`/users`, send);
@@ -36,6 +39,7 @@ const CreateUser = () => {
 
       console.log(error);
     }
+    setLoading(false);
   }
 
   function handleChange(e) {
@@ -49,6 +53,23 @@ const CreateUser = () => {
 
   return (
     <div>
+      <div
+        hidden={!loading}
+        style={{
+          width: "100%",
+          height: "100vh",
+          zIndex: "1",
+          backgroundColor: "rgba(134, 105, 105, 0.2)",
+          position: "fixed",
+          top: "0",
+          left: "0",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spinner animation="border" variant="primary" />
+      </div>
       <Sidebar />
       <Container style={{ maxWidth: "820px", padding: "3rem" }}>
         <h2
