@@ -31,7 +31,6 @@ function App() {
         <Route path="/guide/add" element={<CreateGuide />} />
 
         <Route path="/notification" element={<Notification />} />
-        {/* <Route path="/*" element={<NotFound />} /> */}
       </Routes>
     </>
   );
