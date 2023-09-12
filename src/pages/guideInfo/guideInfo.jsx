@@ -64,6 +64,7 @@ const GuideInfo = () => {
   }, [query, limit, offset]);
   useEffect(() => {
     getdata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
   console.log(users, "users");
   let guideId = data.data?._id;
