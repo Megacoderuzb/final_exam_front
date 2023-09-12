@@ -13,13 +13,13 @@ const UserInfo = () => {
   let getdata = async () => {
     setLoading(true);
     let data = await axios.get(`/users/${id}`);
-    console.log(data);
     setData(data.data);
     setLoading(false);
   };
   useEffect(() => {
     getdata();
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
   return (
     <div>
       <div

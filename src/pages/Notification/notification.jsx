@@ -18,23 +18,24 @@ const Notification = () => {
   const [data, setData] = useState([]);
   const [read, setRead] = useState("");
   const [limit, setLimit] = useState(5);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(1);
   const [filter, setFilter] = useState(false);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [hide, setHide] = useState(true);
   let navigate = useNavigate();
   let getdata = async () => {
     setLoading(true);
-    let url = `/user-guides?page[offset]=${offset}&page[limit]=${limit}&filters[completed]=${filter}`;
-    console.log(filter);
-    // if (filter) {
-    //   url += `&filters[completed]=${filter}`;
-    // }
-    let { data } = await axios.get(url);
-    // console.log(data?.pageInfo?.total, "total");
-    setTotal(data?.pageInfo?.total);
-    console.log(data, "in use");
-    setData(data.data);
+    try {
+      let url = `/user-guides?page[offset]=${offset}&page[limit]=${limit}&filters[completed]=${filter}`;
+      let { data } = await axios.get(url);
+      setTotal(data?.pageInfo?.total);
+      setData(data.data);
+      setHide(true);
+    } catch (error) {
+      setLoading(false);
+      setHide(false);
+    }
     setLoading(false);
   };
   useEffect(() => {
@@ -42,18 +43,11 @@ const Notification = () => {
     if (!token) {
       navigate("/login");
     }
-  }, []);
+  });
   useEffect(() => {
     getdata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, limit, offset, read]);
-  // let getdata = async () => {
-  //   let { data } = await axios.get(`/user-guides`);
-  //   console.log(data, "aaaaaaa");
-  //   setData(data.data);
-  // };
-  // useEffect(() => {
-  //   getdata();
-  // }, [read]);
 
   async function hendleRead(id) {
     try {
@@ -120,7 +114,7 @@ const Notification = () => {
             onChange={(e) => {
               console.log(e.target.value, "f");
               setFilter(e.target.value);
-              setOffset(0)
+              setOffset(0);
             }}
           >
             <option selected value={false}>
@@ -129,7 +123,10 @@ const Notification = () => {
             <option value={true}>Completed</option>
           </Form.Select>
         </InputGroup>
-        {data.map((n) => {
+        <div hidden={hide}>
+          <p> {hide ? "" : "Notifications are not available"}</p>
+        </div>
+        {data?.map((n) => {
           return (
             <article key={n._id}>
               <Row>
@@ -147,6 +144,7 @@ const Notification = () => {
               <p>{n.guide?.content}</p>
 
               <Button
+                hidden={n.completed === false ? false : true}
                 style={{ margin: "1rem 0" }}
                 variant="primary"
                 onClick={() => {

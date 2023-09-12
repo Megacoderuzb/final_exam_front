@@ -20,7 +20,9 @@ const Users = () => {
   const [limit, setLimit] = useState(5);
   const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
+  const [sort, setSort] = useState({ by: "age", order: "" });
   const [loading, setLoading] = useState(true);
+  const [hide, setHide] = useState(false);
 
   let navigate = useNavigate();
   let getUsers = async () => {
@@ -28,36 +30,41 @@ const Users = () => {
     let url = query
       ? `/users?q=${query}&page[offset]=${offset}&page[limit]=${limit}`
       : `/users?page[offset]=${offset}&page[limit]=${limit}`;
-
+    if (sort.order) {
+      url += `&sort[by]=${sort.by}&sort[order]=${sort.order}`;
+    }
     if (filter != "") {
-      console.log(url);
-      console.log(url + `&filters[role]=${filter}`);
       let { data } = await axios.get(url + `&filters[role]=${filter}`);
-
-      console.log(data?.pageInfo?.total, "total");
       setTotal(data?.pageInfo?.total);
-      console.log(data, "in use");
       setData(data.data);
       setLoading(false);
+      if (!data.data[0]) {
+        setHide(true);
+      }
       return;
     }
 
     let { data } = await axios.get(url);
-    console.log(data?.pageInfo?.total, "total");
     setTotal(data?.pageInfo?.total);
-    console.log(data, "in use");
     setData(data.data);
     setLoading(false);
+    if (!data.data[0]) {
+      setHide(true);
+      return;
+    }
+    setHide(false);
   };
   useEffect(() => {
     let token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     getUsers();
-  }, [filter, query, limit, offset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, query, limit, offset, sort]);
   console.log(data, "out");
   let hendleDelete = (p) => {
     setLoading(true);
@@ -70,15 +77,14 @@ const Users = () => {
       .request(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
-        toast(response.data.data, { type: "info" });
+        toast("User deleted", { type: "info" });
+        getUsers();
       })
       .catch((error) => {
         console.log(error);
         toast("Error try again", { type: "error" });
       });
-    setOffset(offset);
     setLoading(false);
-    window.location.reload();
   };
 
   return (
@@ -122,7 +128,10 @@ const Users = () => {
             Add New
           </Button>
         </div>
-        <InputGroup size="lg" style={{ margin: "2rem 0" }}>
+        <div hidden={!hide}>
+          <h4>There are no users</h4>
+        </div>
+        <InputGroup hidden={hide} size="lg" style={{ margin: "2rem 0" }}>
           <InputGroup.Text id="inputGroup-sizing-lg">Search</InputGroup.Text>
           <Form.Control
             aria-label="Large"
@@ -166,9 +175,18 @@ const Users = () => {
             <option value="admin">admin</option>
             <option value="employee">employee</option>
           </Form.Select>
+
+          <Form.Select
+            onChange={(e) => setSort({ by: sort.by, order: e.target.value })}
+            name="order"
+            id="small"
+          >
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </Form.Select>
         </InputGroup>
 
-        <Table striped bordered hover>
+        <Table hidden={hide} striped bordered hover>
           <thead>
             <tr>
               <th>No</th>

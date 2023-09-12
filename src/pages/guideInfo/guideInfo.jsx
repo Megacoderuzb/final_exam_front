@@ -30,9 +30,10 @@ const GuideInfo = () => {
 
   let { id } = useParams();
   let getdata = async () => {
+    setLoading(true);
     let data = await axios.get(`/guides/${id}`);
-    console.log(data);
     setData(data.data);
+    setLoading(false);
   };
   let getUsers = async () => {
     setLoading(true);
@@ -45,9 +46,7 @@ const GuideInfo = () => {
       console.log(url + `&filters[role]=${filter}`);
       let { data } = await axios.get(url + `&filters[role]=${filter}`);
 
-      console.log(data?.pageInfo?.total, "total");
       setTotal(data?.pageInfo?.total);
-      console.log(data, "in use");
       setUsers(data.data);
       setLoading(false);
       return;
@@ -55,41 +54,52 @@ const GuideInfo = () => {
     }
 
     let { data } = await axios.get(url);
-    console.log(data?.pageInfo?.total, "total");
     setTotal(data?.pageInfo?.total);
-    console.log(data.data, "in use");
     setUsers(data?.data);
     setLoading(false);
   };
   useEffect(() => {
     getUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, limit, offset]);
   useEffect(() => {
     getdata();
-  }, []);
+  }, [id]);
   console.log(users, "users");
+  let guideId = data.data?._id;
   const sendGuide = () => {
     setLoading(true);
+    console.log(selectedUser, "su");
+    let data = JSON.stringify({
+      guide_id: guideId,
+      user_ids: selectedUser,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "/user-guides/bulk",
+      data: data,
+    };
+
     axios
-      .post("user-guides/bulk", {
-        user_ids: selectedUser,
-        guide_id: id,
-      })
+      .request(config)
       .then((response) => {
-        console.log("Message sent!", response.data);
+        console.log(JSON.stringify(response.data));
+        toast("Guide sended to users succesfully", { type: "success" });
         setShowModal(false);
-        toast("Successfully sended to users", { type: "success" });
       })
       .catch((error) => {
-        console.error(error);
-        toast("Error while sending to users", { type: "error" });
+        console.log(error);
+        toast("Something went wront try again", { type: "error" });
       });
+
     setLoading(false);
   };
-  async function hendleSelect(id) {
-    setSelectedUser([...selectedUser, id]);
+  async function hendleSelect(_id) {
+    setSelectedUser([...selectedUser, _id]);
   }
-  // console.log(selectedUser, "mana ");
+
   let role = localStorage.getItem("role");
   return (
     <div>
@@ -220,7 +230,7 @@ const GuideInfo = () => {
                         name="group1"
                         type="checkbox"
                         id={`reverse-checkbox-1`}
-                        onClick={() => hendleSelect(id)}
+                        onClick={() => hendleSelect(user._id)}
                       />
                     </td>
                   </tr>

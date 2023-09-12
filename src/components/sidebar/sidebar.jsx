@@ -62,6 +62,7 @@ const Sidebar = () => {
       return;
     }
     setActiveIndex(curPath.length === 0 ? 0 : activeItem);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
   const role = localStorage.getItem("role");

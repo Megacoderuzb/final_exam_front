@@ -20,19 +20,28 @@ const Guides = () => {
   const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState({ by: "_id", order: "asc" });
+  const [hide, setHide] = useState(false);
 
   let navigate = useNavigate();
   let getdata = async () => {
     setLoading(true);
-    let url = query
-      ? `/guides?q=${query}&page[offset]=${offset}&page[limit]=${limit}`
-      : `/guides?page[offset]=${offset}&page[limit]=${limit}`;
+    try {
+      let url = query
+        ? `/guides?q=${query}&page[offset]=${offset}&page[limit]=${limit}&sort[by]=${sort.by}&sort[order]=${sort.order}`
+        : `/guides?page[offset]=${offset}&page[limit]=${limit}&sort[by]=${sort.by}&sort[order]=${sort.order}`;
 
-    let { data } = await axios.get(url);
-    // console.log(data?.pageInfo?.total, "total");
-    setTotal(data?.pageInfo?.total);
-    console.log(data, "in use");
-    setData(data.data);
+      let { data } = await axios.get(url);
+      setTotal(data?.pageInfo?.total);
+      console.log(data, "in use");
+      setData(data.data);
+      setHide(false);
+      if (!data.data[0]) {
+        setHide(true);
+      }
+    } catch (error) {
+      setHide(true);
+    }
     setLoading(false);
   };
   useEffect(() => {
@@ -40,11 +49,12 @@ const Guides = () => {
     if (!token) {
       navigate("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     getdata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, limit, offset]);
-  // console.log(data, "out");
   let role = localStorage.getItem("role");
   let hendleDelete = async (p) => {
     setLoading(true);
@@ -58,17 +68,14 @@ const Guides = () => {
       .then((response) => {
         console.log(JSON.stringify(response.data));
         toast("Successfully deleted", { type: "info" });
+        // getdata();
+        navigate("/guides");
       })
       .catch((error) => {
         console.log(error);
         toast("Error try again", { type: "error" });
       });
-    setLimit(limit);
     setLoading(false);
-    window.location.reload();
-    // let news = await data.filter((item) => item.ID === p);
-    // console.log(news);
-    // setData(news);
   };
   const TextComponent = ({ text, maxLength }) => {
     if (text.length > maxLength) {
@@ -119,7 +126,10 @@ const Guides = () => {
             Add New
           </Button>
         </div>
-        <InputGroup size="lg" style={{ margin: "2rem 0" }}>
+        <div hidden={!hide}>
+          <h4>There are no guides</h4>
+        </div>
+        <InputGroup hidden={hide} size="lg" style={{ margin: "2rem 0" }}>
           <InputGroup.Text id="inputGroup-sizing-lg">Search</InputGroup.Text>
           <Form.Control
             // style={{ width: "300px" }}
@@ -148,8 +158,16 @@ const Guides = () => {
             <option value="5">5</option>
             <option value="10">10</option>
           </Form.Select>
+          <Form.Select
+            onChange={(e) => setSort({ by: sort.by, order: e.target.value })}
+            name="order"
+            id="small"
+          >
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </Form.Select>
         </InputGroup>
-        <Table striped bordered hover>
+        <Table striped bordered hover hidden={hide}>
           <thead>
             <tr>
               <th>No</th>
@@ -159,7 +177,7 @@ const Guides = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((guide, index) => (
+            {data?.map((guide, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{TextComponent({ text: guide.title, maxLength: 30 })}</td>

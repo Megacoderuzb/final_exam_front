@@ -36,8 +36,6 @@ const CreateUser = () => {
       } else {
         toast("The information you entered is incorrect", { type: "error" });
       }
-
-      console.log(error);
     }
     setLoading(false);
   }
@@ -95,17 +93,30 @@ const CreateUser = () => {
             <Form.Control
               style={{ width: "100%" }}
               type="text"
-              //   placeholder="Content"
               name="last_name"
               onChange={handleChange}
             />
+          </Form.Group>
+          <Form.Group style={{ width: "100%" }} controlId="formRole">
+            <Form.Label>Role</Form.Label>
+            <Form.Select
+              size="lg"
+              name="role"
+              id="role"
+              onChange={handleChange}
+            >
+              <option value="" disabled selected>
+                Select role
+              </option>
+              <option value="admin">admin</option>
+              <option value="employee">employee</option>
+            </Form.Select>
           </Form.Group>
           <Form.Group style={{ width: "100%" }} controlId="formAge">
             <Form.Label>Age</Form.Label>
             <Form.Control
               style={{ width: "100%" }}
               type="number"
-              //   placeholder="Enter Age"
               name="age"
               onChange={handleChange}
             />
@@ -115,7 +126,6 @@ const CreateUser = () => {
             <Form.Control
               style={{ width: "100%" }}
               type="text"
-              placeholder="username"
               name="username"
               onChange={handleChange}
             />
@@ -125,7 +135,6 @@ const CreateUser = () => {
             <Form.Control
               style={{ width: "100%" }}
               type="password"
-              // placeholder="username"
               name="password"
               onChange={handleChange}
             />
@@ -148,12 +157,10 @@ const CreateUser = () => {
               fontSize: "14px",
               color: "#fff",
             }}
-            // variant="primary"
             type="submit"
           >
             Send
           </button>
-          {/* </Button> */}
         </Form>
       </Container>
       <Footer />

@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 
 axios.defaults.baseURL = "https://finalexam-production.up.railway.app";
+// axios.defaults.baseURL = "http://localhost:7070";
 
 axios.defaults.headers.common["Content-Type"] = "application/json";
 let token = localStorage.getItem("token");
