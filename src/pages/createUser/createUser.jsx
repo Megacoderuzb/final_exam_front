@@ -25,7 +25,6 @@ const CreateUser = () => {
 
     try {
       let res = await axios.post(`/users`, send);
-
       if (res.status === 201) {
         toast("Created successfully", { type: "success" });
         navigate(`/users`);
@@ -75,7 +74,7 @@ const CreateUser = () => {
             marginBottom: "35px",
           }}
         >
-          Add User
+          Add New User
         </h2>
         <Form style={{ width: "100%" }} onSubmit={handleSubmit}>
           <Form.Group style={{ width: "100%" }} controlId="formName">
