@@ -1,4 +1,4 @@
-name: React Build
+name: ci
 
 on:
   push:
