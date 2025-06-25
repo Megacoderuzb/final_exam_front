@@ -25,6 +25,6 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: react-build-files
+          name: react-build-file
           path: ./dist
 
